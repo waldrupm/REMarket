@@ -32,7 +32,7 @@ contract Ownable {
         // make sure the new owner is a real address
         require(newOwner != address(0), "Must be a real address");
         _owner = newOwner;
-        emit OwnershipTransfer(newOwner);
+        emit OwnershipTransferred(newOwner);
     }
 
     function owner() public view returns (address) {
@@ -70,12 +70,12 @@ contract Pausable is Ownable {
 
     function pause() public onlyOwner whenNotPaused {
         _paused = true;
-        emit ContractPaused(msg.sender);
+        emit Paused(msg.sender);
     }
 
     function unpause() public onlyOwner paused {
         _paused = false;
-        emit ContractUnpaused(msg.sender);
+        emit Unpaused(msg.sender);
     }
 }
 
@@ -535,7 +535,7 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
     // require the token exists before setting
     function setTokenURI(uint256 tokenId) internal {
-        require(_exists(tokenID), "Token does not exist");
+        require(_exists(tokenId), "Token does not exist");
         _tokenURIs[tokenId] = strConcat(_baseTokenURI, uint2str(tokenId));
     }
 
@@ -544,11 +544,20 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //  TODO's: Create CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please
 //  1) Pass in appropriate values for the inherited ERC721Metadata contract
 //      - make the base token uri: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/
+contract ERC721CustomToken is ERC721Metadata {
+
+    constructor(string memory name, string memory symbol) ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") public {
+    
+    } 
+
 //  2) create a public mint() that does the following:
 //      -can only be executed by the contract owner
 //      -takes in a 'to' address, tokenId, and tokenURI as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
+    function mint(address to, uint256 tokenId) public onlyOwner whenNotPaused returns (bool) {
+        super._mint(to, tokenId);
+        setTokenURI(tokenId);
+    }
 
-
-
+}
