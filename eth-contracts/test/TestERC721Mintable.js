@@ -5,9 +5,45 @@ contract('TestERC721Mintable', accounts => {
     const account_one = accounts[0];
     const account_two = accounts[1];
 
+    // Token properties
+    const name = "MikeERC721Token";
+    const symbol = "ME721";
+    const baseTokenURI = "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone";
+
+    // Testing utility props
+    const defAddress = "0x0000000000000000000000000000000000000000";
+    let contractOwner;
+    let contractObj;
+
+    describe('Ownable functionality', () => {
+        beforeEach(async function() {
+            contractObj = await ERC721MintableComplete.new(name, symbol, {from: account_one});
+        })
+
+        it('should give owner address', () => {
+            let owner = await contractObj.owner({from: account_two});
+            assert.equal(owner, account_one, "Owner is not shown as account one");
+        });
+
+        it('should only allow owner to change contract ownership', async () => {
+            let owner = await contractObj.owner({from: account_two});
+            await contractObj.transferOwnership(account_two, {from: account_two});
+            let ownerAfter = await contractObj.owner({from: account_two});
+            assert.equal(owner, ownerAfter, "Owner was changed by non owner");
+        });
+
+        it('should change owner when conditions met', () => {
+            let owner = await contractObj.owner({from: account_two});
+            await contractObj.transferOwnership(account_two, {from: account_one});
+            let ownerAfter = await contractObj.owner({from: account_two});
+            assert.equal(account_two, ownerAfter, "Owner was not changed by valid transfer");
+        });
+    })
+    
+
     describe('match erc721 spec', function () {
         beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: account_one});
+            contractObj = await ERC721MintableComplete.new(name, symbol,{from: account_one});
 
             // TODO: mint multiple tokens
         })
