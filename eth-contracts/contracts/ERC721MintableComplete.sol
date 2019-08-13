@@ -15,7 +15,7 @@ contract Ownable {
     //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
     address private _owner;
 
-    event OwnershipTransferred(address newOwner);
+    event OwnershipTransferred(address previousOwner, address newOwner);
 
     modifier onlyOwner() {
         require(msg.sender == _owner, "Must be owner to do that");
@@ -24,15 +24,16 @@ contract Ownable {
 
     constructor () internal {
         _owner = msg.sender;
-        emit OwnershipTransferred(msg.sender);
+        emit OwnershipTransferred(0x0000000000000000000000000000000000000000, msg.sender);
     }
 
     function transferOwnership(address newOwner) public onlyOwner {
         // TODO add functionality to transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
         require(newOwner != address(0), "Must be a real address");
+        address oldOwner = _owner;
         _owner = newOwner;
-        emit OwnershipTransferred(newOwner);
+        emit OwnershipTransferred(oldOwner, newOwner);
     }
 
     function owner() public view returns (address) {
@@ -176,7 +177,7 @@ contract ERC721 is Pausable, ERC165 {
         // TODO add 'to' address to token approvals
         _tokenApprovals[tokenId] = to;
         // TODO emit Approval Event
-        emit Approval(tokenOwner, msg.sender, tokenId);
+        emit Approval(tokenOwner, to, tokenId);
 
     }
 
@@ -544,11 +545,11 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //  TODO's: Create CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please
 //  1) Pass in appropriate values for the inherited ERC721Metadata contract
 //      - make the base token uri: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/
-contract ERC721CustomToken is ERC721Metadata {
+contract ERC721MintableComplete is ERC721Metadata {
 
     constructor(string memory name, string memory symbol) ERC721Metadata(name, symbol, "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") public {
     
-    } 
+    }
 
 //  2) create a public mint() that does the following:
 //      -can only be executed by the contract owner
