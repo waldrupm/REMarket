@@ -43,7 +43,7 @@ contract('ERC721MintableComplete', accounts => {
 
     });
 
-    describe('TPausable inherited', function () {
+    describe('Pausable inherited', function () {
         before(async() => { 
             contractInstance = await contractDefinition.new(name, symbol, {from: account_one});
         });
@@ -103,7 +103,7 @@ contract('ERC721MintableComplete', accounts => {
         });
     });
 
-    describe('Test suite: ERC721MintableComplete', () => {
+    describe('ERC721MintableComplete', () => {
        const tokensIds = [11, 22, 33, 44, 55, 66, 77, 88, 99, 101];
         before(async() => { 
             contractInstance = await contractDefinition.new(name, symbol, {from: account_one});
